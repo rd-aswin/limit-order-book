@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cassert>
 #include <iostream>
 #include <map>
 #include <queue>
@@ -10,7 +11,8 @@ struct Order {
   int quantity;
   int side;
 };
-class limitOrderBook {
+
+class LimitOrderBook {
  private:
   int lastId = 0;
   unordered_map<int, Order> orderBook;
@@ -18,6 +20,8 @@ class limitOrderBook {
   map<int, deque<int>> priceLevelAsk;
 
  public:
+  int orderCount() { return orderBook.size(); }
+  int getQty(int orderId) { return orderBook[orderId].quantity; }
   int cancelOrder(int orderId) {
     Order order = orderBook[orderId];
     if (order.side == 1) {
@@ -105,12 +109,6 @@ class limitOrderBook {
 
   int placeOrder(int price, int quantity, int side) {
     int orderId = ++lastId;
-    cout << "Enter price: ";
-    cin >> price;
-    cout << "Enter quantity: ";
-    cin >> quantity;
-    cout << "1.Buy\n2.Sell\nChoose side: ";
-    cin >> side;
     orderBook[orderId] = {price, quantity, side};
     if (side == 1)
       priceLevelBid[price].push_back(orderId);
@@ -119,13 +117,35 @@ class limitOrderBook {
     matchOrders(orderId);
     return 0;
   }
+  int viewOrders() {
+    auto it = orderBook.begin();
+    cout << "| ID | PRICE | QUANTITY | SIDE" << endl;
+    while (it != orderBook.end()) {
+      cout << "   " << it->first << "    " << it->second.price << "       "
+           << it->second.quantity << "       "
+           << ((it->second.side == 1) ? "BUY" : "SELL") << endl;
+      ++it;
+    }
+    return 0;
+  }
 };
 
 void test_case() {
-  limitOrderBook book;
+  LimitOrderBook book;
   book.placeOrder(99, 10, 1);
+  book.placeOrder(77, 5, 1);
+  assert(book.orderCount() == 2);
+  book.placeOrder(85, 3, 2);
+  assert(book.getQty(1)==7);
+  book.placeOrder(100, 7, 2);
+  assert(book.orderCount() == 3);
+  book.placeOrder(85, 15, 2);
+  assert(book.getQty(5)==8);
 }
-int main() { return 0; }
+int main() {
+  test_case();
+  return 0;
+}
 /*int main() {
   while (true) {
     int choice;
