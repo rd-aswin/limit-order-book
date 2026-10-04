@@ -1,7 +1,11 @@
 #pragma once
+#include <cstdint>
 
 struct Order {
   int price;
   int quantity;
-  int side;
+  uint8_t side;
+  bool isActive = false;
+  int prevOrderId = 0;
+  int nextOrderId=0;
 };

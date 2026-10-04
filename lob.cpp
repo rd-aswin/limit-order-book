@@ -1,9 +1,21 @@
 
 #include <cassert>
+#include <chrono>
+#include <iostream>
 
 #include "LimitOrderBook.hpp"
 using namespace std;
+void benchmarkPlaceOrder(){
+  LimitOrderBook book;
+  auto start =  chrono::high_resolution_clock::now();
+  for (int i=0 ; i<+100000 ;i++){
+    book.placeOrder(99 +i,i%100,i%2 + 1);
+  }
+  auto end =  chrono::high_resolution_clock::now();
 
+  auto avgLatency = chrono::duration_cast<chrono::nanoseconds>(end-start).count();
+  cout << "Benchmark Latency: " << avgLatency/100000 << endl;
+}
 void test_case() {
   LimitOrderBook book;
   book.placeOrder(99, 10, 1);
@@ -18,5 +30,6 @@ void test_case() {
 }
 int main() {
   test_case();
+  benchmarkPlaceOrder();
   return 0;
 }
